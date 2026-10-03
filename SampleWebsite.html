@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instrument Sales</title>
+    <!--Avanthi Krishnan, Section 06. On my honor, I have neither received nor given any unauthorized assistance on this assignment-->
+    <script>
+        // Musical instruments and their prices and shipping fees
+        var instrumentNames = ["FLUTE", "CLARINET", "GUITAR", "PIANO", "SAXOPHONE"];
+        var instrumentPrices = [750, 300, 200, 5000, 800];
+        var shippingFees = [35, 35, 35, 600, 35];
+
+        // Arrays to store customer data
+        var customerIDs = new Array(4);
+        var customerDiscounts = new Array(4);
+        var purchasedInstruments = new Array(4);
+        var purchasedUnits = new Array(4);
+        var deliveryOptions = new Array(4);
+        var finalPrices = new Array(4);
+
+        // Function to initialize the parallel arrays for string data
+        function initializeStringArrays() {
+            for (var i = 0; i < 4; i++) {
+                customerIDs[i] = "";
+                purchasedInstruments[i] = "";
+                deliveryOptions[i] = "";
+            }
+        }
+
+        // Function to initialize the parallel arrays for numeric data
+        function initializeNumericArrays() {
+            for (var i = 0; i < 4; i++) {
+                customerDiscounts[i] = 0;
+                purchasedUnits[i] = 0;
+                finalPrices[i] = 0;
+            }
+        }
+
+        // Function to generate a random client ID
+        function generateCustomerID(existingIDs) {
+            var id = Math.floor(Math.random() * 9000) + 1000;
+            var idExists = false;
+
+            for (var i = 0; i < existingIDs.length; i++) {
+                if (existingIDs[i] === id) {
+                    idExists = true;
+                    break;
+                }
+            }
+
+            if (idExists) {
+                return generateCustomerID(existingIDs);
+            } else {
+                return id;
+            }
+        }
+
+        // Function to generate a random discount between 10% and 25%
+        function generateDiscount() {
+            return Math.floor(Math.random() * 16) + 10;
+        }
+
+        // Initialize arrays at the start
+        initializeStringArrays();
+        initializeNumericArrays();
+
+        // Main input loop for 4 customers
+        for (var i = 0; i < 4; i++) {
+            var instrument = prompt("Enter instrument name").toUpperCase();
+            if (instrumentNames.indexOf(instrument) === -1) {
+                instrument = prompt("Invalid input. Enter instrument (flute, clarinet, guitar, piano, saxophone):").toUpperCase();
+            }
+
+            var units = prompt("Enter number of units (1 to 3):");
+            if (units !== "1" && units !== "2" && units !== "3") {
+                units = prompt("Invalid input. Enter number of units (1 to 3):");
+            }
+            units = Number(units);
+
+            var delivery = prompt("Enter delivery choice (Yes or No):").toUpperCase();
+            if (delivery !== "YES" && delivery !== "NO") {
+                delivery = prompt("Invalid input. Delivery (Yes or No):").toUpperCase();
+            }
+
+            var id = generateCustomerID(customerIDs);
+            var discount = generateDiscount();
+            var instrumentIndex = instrumentNames.indexOf(instrument);
+
+            var basePrice = instrumentPrices[instrumentIndex] * units;
+            var shipping = (delivery === "YES") ? shippingFees[instrumentIndex] * units : 0;
+            var priceAfterDiscount = basePrice * (1 - discount / 100);
+            var finalPrice = priceAfterDiscount + shipping;
+
+            alert("Client " + id + ", thanks for your purchase of " + units + " " + instrument.toLowerCase() + (units > 1 ? "s" : "") + ". You will enjoy a discount of " + discount + "%");
+
+            // Store data in arrays
+            customerIDs[i] = id;
+            customerDiscounts[i] = discount;
+            purchasedInstruments[i] = instrument;
+            purchasedUnits[i] = units;
+            deliveryOptions[i] = delivery;
+            finalPrices[i] = finalPrice;
+        }
+
+        // Function to generate the report table
+        function generateReport() {
+            var d = new Date();
+            document.write("<h1>Musical Instruments Sales</h1>");
+            document.write("<p>" + d.toString() + "</p>");
+            document.write("<table border='1' cellpadding='8'><tr><th>Client ID</th><th>Instrument</th><th>Units</th><th>Discount (%)</th><th>Final Price ($)</th></tr>");
+            
+            var totalFinalPrice = 0;
+            var totalShipping = 0;
+            var largestSale = 0;
+            var smallestSale = Infinity;
+            var largestDiscount = 0;
+            var smallestDiscount = 100;
+
+            for (var j = 0; j < 4; j++) {
+                document.write("<tr><td>" + customerIDs[j] + "</td><td>" + purchasedInstruments[j] + "</td><td>" + purchasedUnits[j] + "</td><td>" + customerDiscounts[j] + "%</td><td>$" + finalPrices[j].toFixed(2) + "</td></tr>");
+
+                totalFinalPrice += finalPrices[j];
+
+                if (deliveryOptions[j] === "YES") {
+                    var shipIndex = instrumentNames.indexOf(purchasedInstruments[j]);
+                    totalShipping += shippingFees[shipIndex] * purchasedUnits[j];
+                }
+
+                if (finalPrices[j] > largestSale) largestSale = finalPrices[j];
+                if (finalPrices[j] < smallestSale) smallestSale = finalPrices[j];
+                if (customerDiscounts[j] > largestDiscount) largestDiscount = customerDiscounts[j];
+                if (customerDiscounts[j] < smallestDiscount) smallestDiscount = customerDiscounts[j];
+            }
+
+            document.write("</table><br>");
+            document.write("<p>Total Final Prices ($): $" + totalFinalPrice.toFixed(2) + "</p>");
+            document.write("<p>Total Shipping Fees ($): $" + totalShipping.toFixed(2) + "</p>");
+            document.write("<p>Largest Sale ($): $" + largestSale.toFixed(2) + "</p>");
+            document.write("<p>Smallest Sale ($): $" + smallestSale.toFixed(2) + "</p>");
+            document.write("<p>Largest Discount (%): " + largestDiscount + "%</p>");
+            document.write("<p>Smallest Discount (%): " + smallestDiscount + "%</p>");
+        }
+
+        // Generate the report after inputs are complete
+        generateReport();
+    </script>
+</head>
+<body>
+</body>
+</html>
